@@ -29,6 +29,7 @@ OVER_FONT = 'Bahnschrift'
 COIN_RADIUS = 3
 
 
+
 #buttons
 
 b0_x0 = 200
@@ -41,6 +42,4 @@ b3_y0 = 410
 b3_y1 = 500
 
 
-
-
-
+#start button
