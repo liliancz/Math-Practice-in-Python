@@ -11,6 +11,7 @@ ROWS = 30
 # colour settings
 BLACK = (0,0,0)
 WHITE = (255, 255, 255)
+PURPLE = (72,47,72)
 RED = (255, 0, 0)
 GREY = (107, 107, 107)
 PLAYER_COLOUR = (255, 255, 0) 

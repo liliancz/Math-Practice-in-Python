@@ -6,7 +6,19 @@ from questions import *
 pygame.init()   
 vec = pygame.math.Vector2
 B_start = Button()
-B_start.set(0,0,100,100)
+B_start.set(600,400,100,100)
+B_next = Button()
+B_next.set(592,285, 35,35)
+B_prev = Button()
+B_prev.set(590,225, 35,35)
+B_O1 = Button()
+B_O1.set(194,404,30,10)
+B_O2 = Button()
+B_O2.set(194,438,30,10)
+B_O3 = Button()
+B_O3.set(326,403,30,10)
+B_O4 = Button()
+B_O4.set(326,435,30,10)
 Q1 = Question()
 class App:
     def __init__(A):
@@ -21,6 +33,13 @@ class App:
         A.coins =[]
         A.enemies = []
         A.load()
+        A.x = 0
+        A.y = 0
+        A.score = 25
+        A.check = False
+        A.C_Q = 0
+        A.M_Q = 25
+        A.grade = "0"
      
         
     def run(A):
@@ -37,7 +56,22 @@ class App:
                 A.play_events()
                 A.play_update()
                 A.play_draw()
-
+            elif A.state == "credits":
+                A.credits_events()
+                A.credits_update()
+                A.credits_draw()
+            elif A.state == "won":
+                A.won_events()
+                A.won_update()
+                A.won_draw()
+            elif A.state == "wrong":
+                A.wrong_events()
+                A.wrong_update()
+                A.wrong_draw()
+            elif A.state == "finish":
+                A.finish_events()
+                A.finish_update()
+                A.finish_draw()
 
 
 
@@ -70,7 +104,35 @@ class App:
         A.bg_start = pygame.image.load('layout.png')
         A.bg_start = pygame.transform.scale(A.bg_start,(MAZE_WIDTH, MAZE_HEIGHT)) 
         A.bg_inst = pygame.image.load('ins.png')
-        A.bg_inst = pygame.transform.scale(A.bg_inst,(MAZE_WIDTH, MAZE_HEIGHT)) 
+        A.bg_inst = pygame.transform.scale(A.bg_inst,(MAZE_WIDTH, MAZE_HEIGHT))
+        A.bg_credits = pygame.image.load('credits.png')
+        A.bg_credits = pygame.transform.scale(A.bg_credits,(MAZE_WIDTH, MAZE_HEIGHT))
+        A.bg_q1 = pygame.image.load('bg_q.png')
+        A.bg_q1 = pygame.transform.scale(A.bg_q1,(MAZE_WIDTH, MAZE_HEIGHT))
+        A.bg_won = pygame.image.load('won.png')
+        A.bg_won = pygame.transform.scale(A.bg_won,(MAZE_WIDTH, MAZE_HEIGHT))
+        A.bg_wrong = pygame.image.load('wrong.png')
+        A.bg_wrong = pygame.transform.scale(A.bg_wrong,(MAZE_WIDTH, MAZE_HEIGHT))
+        A.bg_results = pygame.image.load('results.png')
+        A.bg_results = pygame.transform.scale(A.bg_results,(MAZE_WIDTH, MAZE_HEIGHT))
+        
+        
+
+    def CurrentGame(A):
+        A.calculo = (A.C_Q/A.M_Q)*100
+        if (A.calculo >= 85):
+            A.grade = "A"
+        elif(A.calculo >= 75 and A.calculo < 85):
+            A.grade = "B"
+        elif(A.calculo >= 65 and A.calculo < 75):
+            A.grade = "C"
+        elif(A.calculo >= 55 and A.calculo < 65):
+            A.grade = "D"
+        elif (A.calculo < 55):
+            A.grade = "F"
+
+        if(A.C_Q >= A.M_Q):
+            A.state = "finish"
 
         
         
@@ -136,18 +198,18 @@ class App:
                     A.state = "Inst"
                     
                     print(A.state)
-                if(pygame.mouse.get_pos()[0] <= b0_x1 and
+                elif(pygame.mouse.get_pos()[0] <= b0_x1 and
                    pygame.mouse.get_pos()[0] >= b0_x0 and
                    pygame.mouse.get_pos()[1] <= b2_y1 and
                    pygame.mouse.get_pos()[1] >= b2_y0):
+                    A.state = 'credits'
                     print('CREDITS')
-                    A.state == 'credits'
-                if(pygame.mouse.get_pos()[0] <= b0_x1 and
-                   pygame.mouse.get_pos()[0] >= b0_x0 and
-                   pygame.mouse.get_pos()[1] <= b3_y1 and
-                   pygame.mouse.get_pos()[1] >= b3_y0):
+                    
+                elif(pygame.mouse.get_pos()[0]<= B_start.x_w and
+                   pygame.mouse.get_pos()[0] >= B_start.x and
+                   pygame.mouse.get_pos()[1] <= B_start.y_h and
+                   pygame.mouse.get_pos()[1] >= B_start.y):
                     print('EXIT')
-                    A.state == 'exit'
                     A.running = False
                     
             
@@ -156,6 +218,7 @@ class App:
         pass
         
     def start_draw(A):
+
         A.screen.fill(BLACK)
         A.screen.blit(A.bg_start, (TOP_BOTTOM_BUFFER//2,TOP_BOTTOM_BUFFER//2))
         pygame.display.update()
@@ -168,13 +231,24 @@ class App:
             if event.type == pygame.QUIT:
                 A.running = False
             if pygame.mouse.get_pressed() == (1,0,0):
-                 if(pygame.mouse.get_pos()[0]<= B_start.x_w and
-                   pygame.mouse.get_pos()[0] >= B_start.x and
-                   pygame.mouse.get_pos()[1] <= B_start.y_h and
-                   pygame.mouse.get_pos()[1] >= B_start.y):
+                print(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] ) 
+                if(pygame.mouse.get_pos()[0]<= B_prev.x_w and
+                   pygame.mouse.get_pos()[0] >= B_prev.x and
+                   pygame.mouse.get_pos()[1] <= B_prev.y_h and
+                   pygame.mouse.get_pos()[1] >= B_prev.y):
                     print(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] ) 
-                    print('Pregunta 1')
+                    print('back to start')
+                    A.state = "start"
+
+                if(pygame.mouse.get_pos()[0] <= B_next.x_w and
+                   pygame.mouse.get_pos()[0] >= B_next.x and
+                   pygame.mouse.get_pos()[1] <= B_next.y_h and
+                   pygame.mouse.get_pos()[1] >= B_next.y):
+                    print(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] ) 
                     A.state = "play"
+                    Q1.Q1()
+                    print('Pregunta 1')
+                    #A.state = "play"
                     
                 
             
@@ -185,84 +259,120 @@ class App:
 
         
     def Inst_draw(A):
-        B_start.set(600,400,100,100)
         A.screen.fill(BLACK)
         A.screen.blit(A.bg_inst, (TOP_BOTTOM_BUFFER//2,TOP_BOTTOM_BUFFER//2))
         pygame.display.update()
 
 
-################### PLAY** FUNCTIONS ######################################################
-                    
+################### PLAY FUNCTIONS #################
+
     def play_events(A):
-        pygame.display.set_caption('MATH GAME')
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                A.running = False
-            if pygame.mouse.get_pressed() == (1,0,0):
-                 if(pygame.mouse.get_pos()[0]<= B_start.x_w and
+                A.running = False 
+            elif pygame.mouse.get_pressed() == (1,0,0):
+                print(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] )
+                if(pygame.mouse.get_pos()[0]<= B_start.x_w and
                    pygame.mouse.get_pos()[0] >= B_start.x and
                    pygame.mouse.get_pos()[1] <= B_start.y_h and
                    pygame.mouse.get_pos()[1] >= B_start.y):
+                    A.check = True
+                    print('Check')
+                elif(pygame.mouse.get_pos()[0]<= B_O1.x_w and
+                   pygame.mouse.get_pos()[0] >= B_O1.x and
+                   pygame.mouse.get_pos()[1] <= B_O1.y_h and
+                   pygame.mouse.get_pos()[1] >= B_O1.y):
                     print(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] ) 
-                    print('Correct')
+                    print('B1')
+                    Q1.selection = '1'
+                elif(pygame.mouse.get_pos()[0]<= B_O2.x_w and
+                   pygame.mouse.get_pos()[0] >= B_O2.x and
+                   pygame.mouse.get_pos()[1] <= B_O2.y_h and
+                   pygame.mouse.get_pos()[1] >= B_O2.y):
+                    print(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] ) 
+                    print('B2')
+                    Q1.selection = '2'
+                elif(pygame.mouse.get_pos()[0]<= B_O3.x_w and
+                   pygame.mouse.get_pos()[0] >= B_O3.x and
+                   pygame.mouse.get_pos()[1] <= B_O3.y_h and
+                   pygame.mouse.get_pos()[1] >= B_O3.y):
+                    print(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] ) 
+                    print('B3')
+                    Q1.selection = '3'
+                elif(pygame.mouse.get_pos()[0]<= B_O4.x_w and
+                   pygame.mouse.get_pos()[0] >= B_O4.x and
+                   pygame.mouse.get_pos()[1] <= B_O4.y_h and
+                   pygame.mouse.get_pos()[1] >= B_O4.y):
+                    print(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] ) 
+                    print('B4')
+                    Q1.selection = '4'
                     
-                
-            
-                
-    def play_update(A):
-        pass
-
-
+                    
         
+
+    def play_update(A):
+        A.CurrentGame()
+        if (A.check == True and Q1.selection != "0"):
+            if (Q1.selection == "4"):
+                A.state = "won"
+                A.C_Q = A.C_Q + 1
+            elif (Q1.selection == "1"):
+                A.state = "wrong"
+                A.score = A.score - 1
+                A.C_Q = A.C_Q + 1
+            elif (Q1.selection == "2"):
+                A.state = "wrong"
+                A.score = A.score - 1
+                A.C_Q = A.C_Q + 1
+            elif (Q1.selection == "3"):
+                A.state = "wrong"
+                A.score = A.score - 1
+                A.C_Q = A.C_Q + 1
+        elif (Q1.selection == "0"):
+            A.check = False
+
+
+   
+       
+ 
     def play_draw(A):
-        B_start.set(600,400,100,100) 
         A.screen.fill(BLACK)
-        A.screen.blit(A.bg_empty, (TOP_BOTTOM_BUFFER//2,TOP_BOTTOM_BUFFER//2))
-        pygame.display.update()
-
-
-################### PLAY FUNCTIONS #################
-
-    def played_events(A):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                A.running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    A.player.move(vec(-1,0))
-                    A.player.p_Iy = 3
-                if event.key == pygame.K_RIGHT:
-                    A.player.move(vec(1,0))
-                    A.player.p_Iy = 1
-                if event.key == pygame.K_DOWN:
-                    A.player.move(vec(0,1))
-                    A.player.p_Iy = 2
-                if event.key == pygame.K_UP:
-                    A.player.move(vec(0,-1))
-                    A.player.p_Iy = 0
-
-    def played_update(A):
-        A.player.update()
-        for enemy in A.enemies:
-            enemy.update()
-        for enemy in A.enemies:
-            if enemy.grid_pos == A.player.grid_pos:
-                A.remove_life()
-        if A.player.current_score > 2000:
-            A.state = 'won'
-                
-    def played_draw(A):
-        A.screen.fill(BLACK)
-        A.screen.blit(A.background, (TOP_BOTTOM_BUFFER//2,TOP_BOTTOM_BUFFER//2))
-        A.draw_coins()
+        A.screen.blit(A.bg_q1, (TOP_BOTTOM_BUFFER//2,TOP_BOTTOM_BUFFER//2))
+        A.draw_text(str(A.score), A.screen, [435,250], 20, PURPLE, START_FONT)
+        #A.draw_coins()
         #A.draw_grid()
-        A.draw_text('SCORE : {}'.format(A.player.current_score), A.screen, [60,0], 16, WHITE, START_FONT)
-        A.draw_text('HIGH SCORE : 0', A.screen, [WIDTH//2+60,0], 16, WHITE,START_FONT)
-        A.player.draw()
-        for enemy in A.enemies:
-            enemy.draw()
-        pygame.display.update()
+       # A.draw_text('SCORE : {}'.format(A.player.current_score), A.screen, [60,0], 16, WHITE, START_FONT)
+        A.draw_text("Solve the addition:", A.screen, [200,300], 16, PURPLE, START_FONT)
+        A.draw_text(str(Q1.X), A.screen, [220,320], 16, PURPLE, START_FONT)
+        A.draw_text("+", A.screen, [260,320], 16, PURPLE, START_FONT)
+        A.draw_text(str(Q1.Y), A.screen, [280,320], 16, PURPLE, START_FONT)
+        A.draw_text("=", A.screen, [320,320], 16, PURPLE, START_FONT)
+        A.draw_text("Select answer:", A.screen, [200,370], 16, PURPLE, START_FONT)
+        A.draw_text(str(Q1.fake1), A.screen, [210,400], 16, PURPLE, START_FONT)
+        A.draw_text(str(Q1.fake2), A.screen, [210,430], 16, PURPLE, START_FONT)
+        A.draw_text(str(Q1.fake3), A.screen, [340,400], 16, PURPLE, START_FONT)
+        A.draw_text(str(Q1.Total), A.screen, [340,430], 16, PURPLE, START_FONT)
 
+
+        if (Q1.selection == "1"):
+           A.x = 200
+           A.y = 410
+        elif (Q1.selection == "2"):
+            A.x = 200
+            A.y = 440
+        elif (Q1.selection == "3"):
+            A.x = 331   
+            A.y = 410
+            
+        elif (Q1.selection == "4"):
+            A.x = 331
+            A.y = 440
+
+        if (Q1.selection != "0"):
+            pygame.draw.circle(A.screen, PURPLE, (A.x,A.y), 5)
+        pygame.display.update()
+     
+      
     def remove_life(A):
         A.player.lives -= 1
         if A.player.lives == 0:
@@ -313,21 +423,105 @@ class App:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 A.running = False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                A.reset()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                 A.running = False
-    
+            elif pygame.mouse.get_pressed() == (1,0,0):
+                if(pygame.mouse.get_pos()[0] <= B_next.x_w and
+                   pygame.mouse.get_pos()[0] >= B_next.x and
+                   pygame.mouse.get_pos()[1] <= B_next.y_h and
+                   pygame.mouse.get_pos()[1] >= B_next.y):
+                     A.state = 'play'
+                     Q1.Q1()
+        
     def won_update(A):
-        pass
+        A.check == False
+
     def won_draw(A):
         A.screen.fill(BLACK)
-        quit_text = "PRESS ESCAPE BUTTON TO QUIT"
-        A.draw_text("WON", A.screen, [WIDTH//2, 100], 36, RED, OVER_FONT, centered= True)
-        A.draw_text(quit_text, A.screen, [WIDTH//2, 600], OVER_TEXT_SIZE, (190, 190,190), OVER_FONT, centered= True)
-        A.draw_text('PRESS SPACE BAR TO PLAY', A.screen, [WIDTH//2, HEIGHT//2],START_TEXT_SIZE, (170,132,58), START_FONT, centered=True)
-        A.draw_text('1 PLAYER ONLY', A.screen, [WIDTH//2, HEIGHT//2+50],START_TEXT_SIZE, (44,167,198), START_FONT, centered=True)
-        A.draw_text('HIGH SCORE', A.screen, [WIDTH//2, 10],START_TEXT_SIZE, WHITE, START_FONT, centered=True)
+        A.screen.blit(A.bg_won, (TOP_BOTTOM_BUFFER//2,TOP_BOTTOM_BUFFER//2))
+        pygame.display.update()
+
+################### WrONg OVER FUNCTIONS #################
+
+    def wrong_events(A):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                A.running = False
+            elif pygame.mouse.get_pressed() == (1,0,0):
+                if(pygame.mouse.get_pos()[0] <= B_next.x_w and
+                   pygame.mouse.get_pos()[0] >= B_next.x and
+                   pygame.mouse.get_pos()[1] <= B_next.y_h and
+                   pygame.mouse.get_pos()[1] >= B_next.y):
+                     A.state = 'play'
+                     Q1.Q1()
+        
+    def wrong_update(A):
+        A.check == False
+
+
+    def wrong_draw(A):
+        A.screen.fill(BLACK)
+        A.screen.blit(A.bg_wrong, (TOP_BOTTOM_BUFFER//2,TOP_BOTTOM_BUFFER//2))
         pygame.display.update()
        
+################### CREDITS FUNCTIONS #################
+
+    def credits_events(A):
+        pygame.display.set_caption('MATH GAME')
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                A.running = False
+            if pygame.mouse.get_pressed() == (1,0,0):
+                 if(pygame.mouse.get_pos()[0]<= B_start.x_w and
+                   pygame.mouse.get_pos()[0] >= B_start.x and
+                   pygame.mouse.get_pos()[1] <= B_start.y_h and
+                   pygame.mouse.get_pos()[1] >= B_start.y):
+                    print(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1] ) 
+                    print('Pregunta 1')
+                    A.state = "start"
+                    
+                
+            
+                
+    def credits_update(A):
+        pass
+
+
         
+    def credits_draw(A):
+
+        A.screen.fill(BLACK)
+        A.screen.blit(A.bg_credits, (TOP_BOTTOM_BUFFER//2,TOP_BOTTOM_BUFFER//2))
+        pygame.display.update()
+
+################### FINISH FUNCTIONS #################
+
+    def finish_events(A):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                A.running = False
+            elif pygame.mouse.get_pressed() == (1,0,0):
+                if(pygame.mouse.get_pos()[0] <= b0_x1 and
+                    pygame.mouse.get_pos()[0] >= b0_x0 and
+                    pygame.mouse.get_pos()[1] <= b3_y1 and
+                    pygame.mouse.get_pos()[1] >= b3_y0):
+                    A.state = 'start'
+                    A.score = 25
+                    A.C_Q = 0
+                    print('CREDITS')
+                    Q1.Q1()
+                elif(pygame.mouse.get_pos()[0]<= B_start.x_w and
+                   pygame.mouse.get_pos()[0] >= B_start.x and
+                   pygame.mouse.get_pos()[1] <= B_start.y_h and
+                   pygame.mouse.get_pos()[1] >= B_start.y):
+                    print('EXIT')
+                    A.running = False
+
+        
+    def finish_update(A):
+        A.check == False
+
+    def finish_draw(A):
+        A.screen.fill(BLACK)
+        A.screen.blit(A.bg_results, (TOP_BOTTOM_BUFFER//2,TOP_BOTTOM_BUFFER//2))
+        A.draw_text(str(A.score), A.screen, [435,250], 20, PURPLE, START_FONT)
+        A.draw_text(A.grade, A.screen, [MAZE_WIDTH//2-50,MAZE_HEIGHT//2], 50, PURPLE, START_FONT)
+        pygame.display.update()
